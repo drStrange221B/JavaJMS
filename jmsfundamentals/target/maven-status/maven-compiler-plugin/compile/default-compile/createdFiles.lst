@@ -1,1 +1,6 @@
-com/emrys/jms/jmsfundamentals/App.class
+com/emrys/jms/jmsfundamentals/FirstQueue.class
+com/emrys/jms/jmsfundamentals/FirstTopic.class
+com/emrys/jms/jmsfundamentals/version/two/x/JMSContextDemo.class
+com/emrys/jms/jmsfundamentals/messagestructure/RequestReplyDemo.class
+com/emrys/jms/jmsfundamentals/messagestructure/MessagePriority.class
+com/emrys/jms/jmsfundamentals/QueueBrowserDemo.class

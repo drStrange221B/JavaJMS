@@ -1,5 +1,8 @@
 package com.emrys.jms.jmsfundamentals.messagestructure;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
@@ -27,11 +30,16 @@ public class RequestReplyDemo {
 			JMSProducer producer = jmsContext.createProducer();
 //			producer.send(requestQueue, "Message has been send from producer!");
 			
+			Map<String, TextMessage> requestMessages = new HashMap<String, TextMessage>(); 
+			
 			TextMessage producerMessage = jmsContext.createTextMessage("Message has been send from producer!");
 			TemporaryQueue replyQueue = jmsContext.createTemporaryQueue();
 			producerMessage.setJMSReplyTo(replyQueue);
 			
 			producer.send(requestQueue, producerMessage);
+			
+			requestMessages.put(producerMessage.getJMSMessageID(), producerMessage);
+			System.out.println("MessageId: " + producerMessage.getJMSMessageID());
 			
 			
 			JMSConsumer consumer = jmsContext.createConsumer(requestQueue);
@@ -43,11 +51,14 @@ public class RequestReplyDemo {
 			JMSProducer replyProducer = jmsContext.createProducer();
 //			replyProducer.send(replyQueue, "you are awesome");
 			
-			replyProducer.send(messageReceived.getJMSReplyTo(), "you are awesome!");
+			TextMessage replyMessage = jmsContext.createTextMessage("you are awesome !");
+			replyMessage.setJMSCorrelationID(messageReceived.getJMSMessageID());
+			replyProducer.send(messageReceived.getJMSReplyTo(), replyMessage);
 			
-			JMSConsumer replyConsumer = jmsContext.createConsumer(replyQueue);
-			String receiveBody = replyConsumer.receiveBody(String.class);
-			System.out.println(receiveBody);
+			JMSConsumer replyConsumer = jmsContext.createConsumer(messageReceived.getJMSReplyTo());
+			TextMessage receiveBody = (TextMessage)replyConsumer.receive();
+			System.out.println(receiveBody.getText() + "  " + receiveBody.getJMSCorrelationID());
+			System.out.println((requestMessages.get(receiveBody.getJMSCorrelationID())).getText());
 			
 			
 		}
