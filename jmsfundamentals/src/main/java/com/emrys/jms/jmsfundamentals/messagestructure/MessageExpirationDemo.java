@@ -17,6 +17,7 @@ public class MessageExpirationDemo {
 		
 		InitialContext context = new InitialContext();
 		Queue queue = (Queue)context.lookup("queue/myQueue");
+		Queue expiryQueue = (Queue)context.lookup("queue/expiryQueue");
 		
 		try(ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory();
 			JMSContext jmsContext =	cf.createContext()){
@@ -32,6 +33,13 @@ public class MessageExpirationDemo {
 			Message receiveBody = createConsumer.receive(2000);
 			
 			System.out.println(receiveBody + "   checking...");
+			
+			
+			//extract expired message from ExpiryQueue
+			
+			System.out.println("Message from expiry queue: " + jmsContext.createConsumer(expiryQueue).receiveBody(String.class));
+			
+			
 			
 		}
 		
